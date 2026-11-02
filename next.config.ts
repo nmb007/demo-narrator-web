@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-import { env } from "./src/shared/config/env";
+import { env } from "@/shared/config/env";
 
 // Importing the env module fails the build when a public value is missing or invalid.
 void env.apiBaseUrl;
