@@ -57,10 +57,10 @@ There is no coverage gate on pages, query hooks, or feature components. Playwrig
 
 | Tag | When it runs | Journeys |
 |---|---|---|
-| `@fast` | Every PR, on Chromium, against the real API | <ul><li>Signed-out visit to `/run?id=…` redirects to login, then back after login.</li><li>Wrong password shows an error.</li><li>Choosing a `.txt` file is blocked on the client.</li><li>Uploading a non-video file that passes the client check shows the API's 415 message. A file over the size limit is blocked on the client.</li><li>Uploading a 3-second `.mp4` shows progress, then the run page, with status `queued` or `running` and the timeline.</li><li>Download before the output is ready shows "not ready".</li><li>A tampered or expired token redirects to login with the expiry notice.</li><li>Logout clears the session.</li><li>An invalid `?id=` shows the not-found state.</li></ul> |
+| `@fast` | Every PR, on Chromium, against the real API. Phase 1 runs only the signup journeys (create an account, 409 on a taken email, 422 on a short password, logout). The other journeys arrive with the phase that builds them. | <ul><li>Signed-out visit to `/run?id=…` redirects to login, then back after login.</li><li>Wrong password shows an error.</li><li>Choosing a `.txt` file is blocked on the client.</li><li>Uploading a non-video file that passes the client check shows the API's 415 message. A file over the size limit is blocked on the client.</li><li>Uploading a 3-second `.mp4` shows progress, then the run page, with status `queued` or `running` and the timeline.</li><li>Download before the output is ready shows "not ready".</li><li>A tampered or expired token redirects to login with the expiry notice.</li><li>Logout clears the session.</li><li>An invalid `?id=` shows the not-found state.</li></ul> |
 | `@slow` | Nightly or on demand. Needs `GROQ_API_KEY` and internet access. | <ul><li>Full pipeline reaches `succeeded`, the download is a non-empty file with an `.mp4` name, and the preview plays.</li><li>Retrying `[voice, mux]` with a different voice produces a new run that succeeds.</li><li>Retrying while a run is active shows the 409 message.</li></ul> |
 | `@cross-browser` | Nightly | The `@fast` suite on Firefox and WebKit. Safari behavior for Blob downloads matters here. |
-| `@a11y` (Phase 4) | Every PR | `@axe-core/playwright` scan of each page. Fails on serious or critical violations. |
+| `@a11y` (Phase 5) | Every PR | `@axe-core/playwright` scan of each page. Fails on serious or critical violations. |
 
 ## 6.6 Scheduled and cross-repository checks
 
@@ -69,8 +69,8 @@ There is no coverage gate on pages, query hooks, or feature components. Playwrig
 | Spec drift: start the backend from `main`, fetch `/openapi.json`, and diff it against the snapshot | Nightly | Catch backend contract changes early |
 | `pnpm audit --prod` or dependency review | Every PR and weekly | Known vulnerabilities |
 | Renovate or Dependabot, grouped (Next/React, TanStack, test, lint) | Weekly | Keep dependencies current, and watch for `typescript-eslint` support of TypeScript 7 |
-| CSP check: load each built page under the production `_headers` and fail on any CSP violation report | Every PR (Phase 4) | A change cannot silently break the CSP |
-| Knip (optional, Phase 4) | Every PR | Unused files, exports, and dependencies |
+| CSP check: load each built page under the production `_headers` and fail on any CSP violation report | Every PR (Phase 5) | A change cannot silently break the CSP |
+| Knip (optional, Phase 5) | Every PR | Unused files, exports, and dependencies |
 
 ## 6.7 Definition of done
 

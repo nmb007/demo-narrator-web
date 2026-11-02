@@ -215,13 +215,13 @@ Mapping a status code to a message happens **in the feature**, because the same 
 
 | URL | Group | Access | Purpose | Phase |
 |---|---|---|---|---|
-| `/` | `(public)` | any | Client redirect: `/videos/new` if signed in, `/login` otherwise | 1 |
-| `/login` | `(public)` | signed out | Login, plus the `?reason=expired` notice | 1 |
-| `/signup` | `(public)` | signed out | Signup | 2 |
-| `/videos/new` | `(app)` | signed in | Upload form and options | 1 |
-| `/run?id=<run_id>` | `(app)` | signed in | Status, polling, error, download, preview, retry | 1 (preview and retry in 2) |
-| `/videos` | `(app)` | signed in | Library | 3 (needs backend) |
-| `/video?id=<video_id>` | `(app)` | signed in | Video detail and run history | 3 (needs backend) |
+| `/` | `(public)` | any | Client redirect: the signed-in placeholder in Phase 1, then `/videos/new` once upload exists. Signed out goes to `/signup` in Phase 1, then `/login` once that page exists. | 1 |
+| `/signup` | `(public)` | signed out | Signup. Success stores the token and opens the signed-in placeholder. | 1 |
+| `/login` | `(public)` | signed out | Login, plus the `?reason=expired` notice | 2 |
+| `/videos/new` | `(app)` | signed in | Upload form and options | 2 |
+| `/run?id=<run_id>` | `(app)` | signed in | Status, polling, error, download, preview, retry | 2 (preview and retry in 3) |
+| `/videos` | `(app)` | signed in | Library | 4 (needs backend) |
+| `/video?id=<video_id>` | `(app)` | signed in | Video detail and run history | 4 (needs backend) |
 | `/404` | — | any | `not-found.tsx`, exported as `404.html` | 1 |
 
 ## 3.9 Configuration
@@ -262,7 +262,7 @@ flowchart LR
     - `connect-src 'self' <api-origin>`
     - `media-src 'self' blob:`
     - `img-src 'self' data: blob:`
-    - `script-src 'self'`, plus whatever Next.js inline bootstrap scripts need (checked in Phase 1)
+    - `script-src 'self'`, plus whatever Next.js inline bootstrap scripts need (checked in Phase 5)
     - `style-src 'self' 'unsafe-inline'`
     - `frame-ancestors 'none'`
   - `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`.

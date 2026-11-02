@@ -1,6 +1,6 @@
 # 5. Coding and Architectural Conventions
 
-These rules become binding once they are approved. At scaffold time they will be copied into `AGENTS.md`.
+These rules become binding once they are approved. At scaffold time, `AGENTS.md` points here and at `docs/06-quality-checks.md`. It lists the commands. It does not copy these documents.
 
 ## 5.1 Architecture
 

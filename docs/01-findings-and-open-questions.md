@@ -66,14 +66,14 @@ Consequences:
 
 | ID | User capability | Backend support | Phase |
 |----|-----------------|-----------------|-------|
-| R1 | Sign up | Yes | 2 |
-| R2 | Log in and log out; be sent to login on expiry | Yes, with the limits in F1 | 1 |
-| R3 | Upload a video with optional voice, model, and tempo cap, and see progress | Yes, after CORS (F3) | 1 |
-| R4 | Watch a run move through its four steps | Yes (polling) | 1 |
-| R5 | Download the narrated MP4 | Yes (Blob download) | 1 |
-| R6 | Retry selected steps with new options | Yes | 2 |
-| R7 | See my videos and their run history | Later, after backend endpoints are added | 3 |
-| R8 | Preview the result in the browser | Yes, through a Blob URL | 2 |
+| R1 | Sign up | Yes | 1 |
+| R2 | Log in and log out; be sent to login on expiry | Yes, with the limits in F1 | 2 |
+| R3 | Upload a video with optional voice, model, and tempo cap, and see progress | Yes, after CORS (F3) | 2 |
+| R4 | Watch a run move through its four steps | Yes (polling) | 2 |
+| R5 | Download the narrated MP4 | Yes (Blob download) | 2 |
+| R6 | Retry selected steps with new options | Yes | 3 |
+| R7 | See my videos and their run history | Later, after backend endpoints are added | 4 |
+| R8 | Preview the result in the browser | Yes, through a Blob URL | 3 |
 
 Non-functional requirements:
 
@@ -90,7 +90,7 @@ Non-functional requirements:
 |---|---|---|
 | What "SPA" means | **Static export** (`output: 'export'`) | All data access happens in the browser. See 1.3. |
 | Deployment | **A free CDN, no server: Cloudflare Pages** | `_headers` carries the CSP and the security headers. Each branch gets a preview deploy. Check the current free-tier terms when you sign up. |
-| Backend list endpoints | **Added later** | The library (R7) moves to Phase 3. Phases 1–2 do not need it. |
+| Backend list endpoints | **Added later** | The library (R7) moves to Phase 4. Phases 1–3 do not need it. |
 | Where checks run | **On the host with pnpm** | Node 24 and Playwright browsers are installed locally. The backend stack still runs in Docker for E2E tests. |
 | Node and pnpm versions | **Exact Node in version files, range checked on install, exact pnpm via Corepack** | `.node-version` and `.nvmrc` both say `24.22.0`. `engines.node` is `>=24.22.0 <25` and `.npmrc` has `engine-strict=true`, so `pnpm install` fails on any other major. `packageManager` pins the exact pnpm. No required version manager. See [02 §2.3.13](02-technology-stack.md#2313-same-node-and-pnpm-on-every-machine). |
 | Token storage | **`localStorage`** | The token is shared by all tabs and stays until `exp`, even across browser restarts. Login and logout reach every open tab through the `storage` event. Accepted risk: any XSS bug could read the token, and on a shared computer it stays on disk until it expires. Mitigations: a strict CSP, no third-party scripts, no raw HTML, and the 60-minute lifetime. |
@@ -143,12 +143,15 @@ The previous revision asked two questions that depended on having a Next.js serv
 5. **A5.** No analytics or error-tracking SaaS for now. Adding any would change the CSP.
 6. **A6.** Narrated outputs are small enough to hold in browser memory as a Blob. The input is capped at 100 MB and ≤ 10 min, and the output is similar in size. This holds until signed URLs arrive (backend item 4).
 
-## 1.8 Risks and spikes (done at the start of Phase 1)
+## 1.8 Risks and spikes
 
-| Risk | Spike |
-|---|---|
-| 100 MB XHR upload across origins: CORS preflight, progress events, and long server processing after the bytes arrive | Upload 100 MB from `localhost:3000` to the local API with CORS turned on. Measure the progress events and check that timeouts hold. |
-| Blob download of a large MP4: memory use, filename from `Content-Disposition`, Safari behavior | Download a large output in Chrome, Firefox, and Safari. Check the preview seeks correctly. |
-| Prerender and hydration with a client session guard: no protected-content flash, no hydration mismatch | Build, serve `out/`, and load guarded routes signed in and signed out. |
-| A strict CSP on a static export. Next.js emits inline bootstrap scripts, and without a server there is no per-request nonce. | Check whether a post-build step can hash the inline scripts into `_headers` (`script-src 'self' 'sha256-…'`). If not, accept `'unsafe-inline'` for scripts and record the risk. |
-| TypeScript 7.0 is npm `latest`, but `typescript-eslint@8.72` only supports `<6.1.0` | Pin TypeScript `~6.0.3`. |
+Phase 1 does not run the upload or download spikes. Those wait for Phase 2. The CSP spike waits for Phase 5.
+
+| Risk | When | Spike |
+|---|---|---|
+| Signup hydrates with a stored token and does not mismatch the prerendered HTML | Phase 1 | Build, serve `out/`, sign up, reload the placeholder, and log out. |
+| 100 MB XHR upload across origins: CORS preflight, progress events, and long server processing after the bytes arrive | Phase 2 | Upload 100 MB from `localhost:3000` to the local API with CORS turned on. Measure the progress events and check that timeouts hold. |
+| Blob download of a large MP4: memory use, filename from `Content-Disposition`, Safari behavior | Phase 2 | Download a large output in Chrome, Firefox, and Safari. Check the preview seeks correctly. |
+| Prerender and hydration with a client session guard: no protected-content flash, no hydration mismatch | Phase 2 | Build, serve `out/`, and load guarded routes signed in and signed out. |
+| A strict CSP on a static export. Next.js emits inline bootstrap scripts, and without a server there is no per-request nonce. | Phase 5 | Check whether a post-build step can hash the inline scripts into `_headers` (`script-src 'self' 'sha256-…'`). If not, accept `'unsafe-inline'` for scripts and record the risk. |
+| TypeScript 7.0 is npm `latest`, but `typescript-eslint@8.72` only supports `<6.1.0` | Phase 1 | Pin TypeScript `~6.0.3`. |

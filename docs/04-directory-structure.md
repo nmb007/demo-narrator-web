@@ -1,6 +1,6 @@
 # 4. Directory Structure
 
-The tree below is the layout planned for the end of Phase 2. Items marked `(P3)` arrive in Phase 3. File names are examples; the role of each folder is the binding part.
+The tree below is the layout planned for the end of Phase 3. Items marked `(P4)` arrive in Phase 4. File names are examples; the role of each folder is the binding part. Phase 1 adds only signup, the session, and the signed-in placeholder.
 
 ```
 demo-narrator-frontend/
@@ -34,8 +34,8 @@ demo-narrator-frontend/
 │   │       ├── error.tsx                # Segment error boundary
 │   │       ├── videos/
 │   │       │   ├── new/page.tsx         # Upload
-│   │       │   └── page.tsx             # (P3) Library
-│   │       ├── video/page.tsx           # (P3) ?id= video detail
+│   │       │   └── page.tsx             # (P4) Library
+│   │       ├── video/page.tsx           # (P4) ?id= video detail
 │   │       └── run/page.tsx             # ?id= run status (Suspense around useSearchParams)
 │   │
 │   ├── features/                        # BUSINESS CAPABILITIES (no cross-feature imports)
@@ -68,7 +68,7 @@ demo-narrator-frontend/
 │   │           ├── download-button.tsx
 │   │           ├── video-preview.tsx              # (P2)
 │   │           ├── retry-form.tsx                 # (P2)
-│   │           └── video-list.tsx                 # (P3)
+│   │           └── video-list.tsx                 # (P4)
 │   │
 │   └── shared/                          # INFRASTRUCTURE (imports nothing from app/ or features/)
 │       ├── api/
@@ -104,7 +104,7 @@ demo-narrator-frontend/
 ├── tsconfig.json                        # strict; "@/*" → "src/*"
 ├── vitest.config.mts
 ├── package.json / pnpm-lock.yaml
-└── AGENTS.md                            # Contributor/agent rules (from docs/05 + docs/06)
+└── AGENTS.md                            # Entry point. Points at the docs. Does not copy them.
 ```
 
 ## Reasons for the main choices

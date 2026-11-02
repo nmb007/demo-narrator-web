@@ -1,6 +1,6 @@
 # Demo Narrator Frontend: Architecture Proposal
 
-Status: **Proposed, revision 6, awaiting review.** Nothing in this folder is implemented. No dependencies are installed and no project configuration exists yet.
+Status: **Proposed, revision 7, awaiting review.** Nothing in this folder is implemented. No dependencies are installed and no project configuration exists yet.
 
 This folder is the pre-implementation design for a Next.js 16.4.3 frontend over the Demo Narrator FastAPI backend (`../demo-narrator`).
 
@@ -14,6 +14,7 @@ This folder is the pre-implementation design for a Next.js 16.4.3 frontend over 
 | 4 | 2026-10-30 | Node is pinned as exact patch `24.22.0` in `.node-version` and `.nvmrc`, and as `>=24.22.0 <25` in `engines` with `engine-strict=true`. pnpm is pinned exactly via `packageManager`. No version manager is required. |
 | 5 | 2026-11-02 | Pages and layouts stay Server Components for the static HTML shell only. They do not load user data. Duration limits are not copied into the frontend. The API's 422 is the duration check. |
 | 6 | 2026-11-02 | Every OpenAPI path is written once, inside its feature `api.ts` factory. Screens call the factory. The run endpoint is the example, not a special case. |
+| 7 | 2026-11-02 | Phase 1 is the signup page only, so the code shape can be reviewed before login, upload, or download. Later phases keep the rest of the plan. |
 
 ## Reading order
 
@@ -25,7 +26,7 @@ This folder is the pre-implementation design for a Next.js 16.4.3 frontend over 
 | 4 | [Directory structure](04-directory-structure.md) | The proposed tree and what belongs in each folder |
 | 5 | [Conventions](05-conventions.md) | Coding and architectural rules |
 | 6 | [Quality checks](06-quality-checks.md) | Every automated check and where it runs |
-| 7 | [Implementation plan](07-implementation-plan.md) | Phases, starting with a vertical slice |
+| 7 | [Implementation plan](07-implementation-plan.md) | Phases, starting with the signup page |
 
 ## The proposal in one paragraph
 
@@ -33,7 +34,8 @@ Next.js 16 is used as a **static-export single-page application** (`output: 'exp
 
 ## What this needs from the backend before Phase 1
 
-1. **CORS** for the frontend origins. Without it the browser cannot call the API at all.
-2. A **public HTTPS deployment** of FastAPI that accepts 100 MB uploads and has long request timeouts. The frontend needs no server, but the API still does.
+1. **CORS** for `http://localhost:3000`. Without it the browser cannot call the signup API.
+
+A public HTTPS deployment, with a body limit of at least 100 MB and long upload timeouts, is needed before Phase 2 (upload), not before signup.
 
 Details and later backend items: [01 §1.6](01-findings-and-open-questions.md#16-backend-changes).

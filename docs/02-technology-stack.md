@@ -90,7 +90,7 @@ Versions were checked on the npm registry on 2026-10-30. Behavior was checked ag
   - Devtools are optional and only for development.
 - **Alternatives.**
   - **SWR**, which the Next.js docs use in their examples, is smaller, with simpler mutations and polling. It has weaker mutation and invalidation tools and no first-class `queryOptions` factories. A fair choice, but TanStack Query fits the polling and mutation-heavy flows better.
-  - **`openapi-react-query` 0.5** gives typed TanStack hooks generated from the OpenAPI document. It is convenient, but it is pre-1.0, its query keys are less readable, and it saves little at 6 endpoints. Reconsider it in Phase 3.
+  - **`openapi-react-query` 0.5** gives typed TanStack hooks generated from the OpenAPI document. It is convenient, but it is pre-1.0, its query keys are less readable, and it saves little at 6 endpoints. Reconsider it in Phase 4.
 
 ### 2.3.5 Client-side state: no global store
 

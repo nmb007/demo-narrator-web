@@ -2,28 +2,26 @@
 
 Each phase ends at a review point. The next phase starts only after the exit criteria are met and you have approved them.
 
-## Phase 1: Vertical slice — log in, upload, watch, download
+## Phase 1: Signup page
 
-**Why this slice.** It runs through every layer and every risky integration in one thin path:
+**Why this slice.** It is the first review of the plan in code. Signup uses the pieces every later form will copy, and it does not need upload, polling, or download.
 
-- static export with prerendered shells
-- client session store and route guard
-- React Hook Form + Zod + TanStack mutation (login)
-- cross-origin XHR upload with progress
-- TanStack Query polling
-- Blob download
-- error normalizer and the global 401 path
-- Vitest tests of the pure frontend logic
-- Playwright tests against the built `out/` and the real API
-
-If an assumption is wrong, it shows up here, before more features exist.
+- static export and the prerendered shell
+- React Hook Form, Zod, and one TanStack mutation
+- the OpenAPI path written once in `features/auth/api.ts`
+- the error normalizer (409 on email, 422 field errors)
+- the session store, because a successful signup logs in with the same credentials
+- Vitest for the schema and the error map
+- one Playwright test against the built `out/` and the real API
 
 ### 1.0 Backend prerequisite (small PR in `demo-narrator`)
 
 - `CORSMiddleware`, driven by a `CORS_ALLOW_ORIGINS` setting, configured as in section 1.6.
 - Add `http://localhost:3000` to the local `.env.example`.
 
-### 1.1 Minimal foundation (only what the slice needs)
+A public HTTPS API is not required for this phase. Local FastAPI is enough.
+
+### 1.1 Minimal foundation (only what signup needs)
 
 1. Scaffold with `create-next-app@16.4.3`:
    - TypeScript, App Router, `src/`, Tailwind, ESLint, Turbopack
@@ -38,47 +36,45 @@ If an assumption is wrong, it shows up here, before more features exist.
    - Vitest + React Testing Library (no MSW)
    - Playwright + `serve`
    - the scripts from 6.1
-   - a CI workflow running the stages in 6.2
+   - a CI workflow running the stages in 6.2, with `@fast` limited to the signup journeys
 4. Add `scripts/export-openapi.mjs`, commit `openapi/openapi.json`, and add `pnpm api:generate`.
-5. Shared layer:
+5. Shared layer, limited to what signup uses:
    - `shared/config/env.ts`
    - `shared/api` (client, errors, types)
    - `shared/query/query-client.ts`
    - `shared/session`
-   - `shared/ui` (button, field, input, label, alert, progress, card, skeleton, sonner)
-   - `safeRedirect`
-6. Add a baseline `public/_headers`, and add `AGENTS.md` containing sections 5 and 6.
+   - `shared/ui`: button, field, input, label, alert
+6. `AGENTS.md` already exists. Keep it a pointer to the docs. Do not paste the conventions into it.
 
-### 1.2 Spikes (time-boxed; each result is recorded as an ADR)
+### 1.2 Signup
 
-- 100 MB cross-origin XHR upload: preflight, progress events, and long server-side processing.
-- Blob download and preview on Chrome, Firefox, and Safari: memory use, filename, seeking.
-- Hydrating the session guard: no flash of protected content, no hydration warnings on the built `out/`.
-- Strict CSP with Next.js inline bootstrap scripts: can the hashes be generated after the build?
-
-### 1.3 Features
-
-- **Login and logout.** `/login` with the `?reason=expired` and `?next=` round trip, the `(app)` guard, the user menu, the expiry timer, and the global 401 handling.
-- **Upload.** `/videos/new`:
-  - file picker with client pre-checks
-  - collapsed "Advanced" section for voice, model, and `max_atempo`
-  - progress bar, then a "validating" state
-  - cancel button
-  - inline 413/415/422 errors
-  - on success, the new run is seeded into the cache and the app navigates to `/run?id=…`
-- **Run status.** `/run?id=…` with a step timeline, status badge, timestamps, the failure message, polling with an `aria-live` announcement, and not-found and error states.
-- **Download.** A Blob download, enabled only when the run succeeded and included `mux`. A 404 response shows "not ready".
+- `/signup` with email and password. The schema matches the API: email, password 8–128.
+- Submit calls `useSignup()` in `features/auth/api.ts`. That function writes `POST /v1/auth/signup` once. On `201` it logs in with the same credentials and stores the token.
+- A `409` sets a field error on email. A `422` sets field errors from `ApiError.fieldErrors`.
+- Success redirects to a signed-in placeholder. The placeholder shows the email from the token and a logout control that clears the session. It is not the upload page.
+- `/` sends a signed-out visitor to `/signup` and a signed-in visitor to the placeholder.
+- There is no `/login` page in this phase.
 
 ### Exit criteria
 
-- [ ] All checks in 6.2 are green, including the `@fast` E2E tests for these journeys.
-- [ ] Each spike has an ADR, and these documents are updated where a spike changed the plan.
-- [ ] A manual walkthrough of the built `out/` against the local stack works from a real upload to a downloaded MP4.
-- [ ] You have reviewed the code shape before more features are added.
+- [ ] Format, lint, types, unit tests, `next build`, and the signup Playwright test pass.
+- [ ] A manual walkthrough of the built `out/` against the local API creates an account, shows the placeholder, and logs out.
+- [ ] You have reviewed the code shape (boundaries, the single path literal, the form, the session) before any other page is added.
 
-## Phase 2: Remaining capabilities the backend already supports
+## Phase 2: Log in, upload, watch, download
 
-- **Signup (R1):** log in automatically after signup. A 409 sets a field error on the email field.
+This is the rest of the first end-to-end path. It starts only after the Phase 1 review.
+
+- **Login and logout.** `/login` with the `?reason=expired` and `?next=` round trip, the `(app)` guard, the user menu, the expiry timer, and the global 401 handling.
+- **Upload.** `/videos/new` with client checks for extension and size, the advanced options, progress, cancel, and inline 413/415/422 errors. Success seeds the new run into the cache and opens `/run?id=…`.
+- **Run status.** The step timeline, polling, the failure message, `loading` and not-found states.
+- **Download.** A Blob download, enabled only when the run succeeded and included `mux`.
+- **Spikes,** each recorded as an ADR: a 100 MB cross-origin upload, a Blob download in Chrome, Firefox, and Safari, and the session guard on a built `out/` with no hydration warning.
+
+Exit: a manual walkthrough goes from login through a real upload to a downloaded MP4, and the `@fast` journeys for this phase are green.
+
+## Phase 3: Retry, preview, and first deploy
+
 - **Retry (R6)** on the run page:
   - step checkboxes in pipeline order (default: all)
   - the shared options fields
@@ -89,9 +85,9 @@ If an assumption is wrong, it shows up here, before more features exist.
 - **Polish:** empty states, toasts, focus management, responsive layout.
 - **Testing:** the `@slow` E2E suite runs nightly.
 
-Exit: R1–R6 and R8 work end to end on a deployed preview against a deployed API.
+Exit: R2–R6 and R8 work end to end on a deployed preview against a deployed API.
 
-## Phase 3: Library and history (after the backend adds list endpoints)
+## Phase 4: Library and history (after the backend adds list endpoints)
 
 Prerequisite: backend PRs for `GET /v1/auth/me`, `GET /v1/videos` (paginated), and `GET /v1/videos/{video_id}` with its runs.
 
@@ -103,7 +99,7 @@ Prerequisite: backend PRs for `GET /v1/auth/me`, `GET /v1/videos` (paginated), a
 
 Exit: R7 is delivered.
 
-## Phase 4: Hardening
+## Phase 5: Hardening
 
 - Enforce the CSP, add the CSP regression check, and add `@axe-core/playwright` and the nightly `@cross-browser` run.
 - Bundle review and Knip, and group Renovate updates.
