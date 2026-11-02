@@ -121,7 +121,7 @@ The previous revision asked two questions that depended on having a Next.js serv
 
 1. Add `CORSMiddleware`. Origins come from a setting, for example `CORS_ALLOW_ORIGINS=http://localhost:3000,https://<frontend-domain>`.
    - `allow_methods`: `GET`, `POST`
-   - `allow_headers`: `Authorization`, `Content-Type`
+   - `allow_headers`: `Authorization`, `Content-Type`, `X-Request-ID`
    - `expose_headers`: `Content-Disposition`, so the SPA can read the download filename
    - `allow_credentials=False`, because no cookies are used
    - `max_age` around 600 s, to cache preflight responses

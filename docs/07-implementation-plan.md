@@ -51,8 +51,8 @@ A public HTTPS API is not required for this phase. Local FastAPI is enough.
 - `/signup` with email and password. The schema matches the API: email, password 8–128.
 - Submit calls `useSignup()` in `features/auth/api.ts`. That function writes `POST /v1/auth/signup` once. On `201` it logs in with the same credentials and stores the token.
 - A `409` sets a field error on email. A `422` sets field errors from `ApiError.fieldErrors`.
-- Success redirects to a signed-in placeholder. The placeholder shows the email from the token and a logout control that clears the session. It is not the upload page.
-- `/` sends a signed-out visitor to `/signup` and a signed-in visitor to the placeholder.
+- Success redirects to `/home`. The placeholder shows the email from the token and a logout control that clears the session and returns to `/signup`. It is not the upload page.
+- `/` sends a signed-out visitor to `/signup` and a signed-in visitor to `/home`.
 - There is no `/login` page in this phase.
 
 ### Exit criteria

@@ -215,8 +215,9 @@ Mapping a status code to a message happens **in the feature**, because the same 
 
 | URL | Group | Access | Purpose | Phase |
 |---|---|---|---|---|
-| `/` | `(public)` | any | Client redirect: the signed-in placeholder in Phase 1, then `/videos/new` once upload exists. Signed out goes to `/signup` in Phase 1, then `/login` once that page exists. | 1 |
-| `/signup` | `(public)` | signed out | Signup. Success stores the token and opens the signed-in placeholder. | 1 |
+| `/` | `(public)` | any | Client redirect: `/home` in Phase 1, then `/videos/new` once upload exists. Signed out goes to `/signup` in Phase 1, then `/login` once that page exists. | 1 |
+| `/signup` | `(public)` | signed out | Signup. Success stores the token and opens `/home`. | 1 |
+| `/home` | `(app)` | signed in | Phase 1 placeholder. Shows the email from the token and logs out back to `/signup`. | 1 |
 | `/login` | `(public)` | signed out | Login, plus the `?reason=expired` notice | 2 |
 | `/videos/new` | `(app)` | signed in | Upload form and options | 2 |
 | `/run?id=<run_id>` | `(app)` | signed in | Status, polling, error, download, preview, retry | 2 (preview and retry in 3) |
