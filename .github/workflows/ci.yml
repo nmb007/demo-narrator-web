@@ -1,29 +1,29 @@
 #name: CI
 
 #on:
-  #pull_request:
-  #push:
-    #branches: [main]
+#pull_request:
+#push:
+#branches: [main]
 
 #jobs:
-  #check:
-    #runs-on: ubuntu-latest
-    #env:
-      #NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
-      #NEXT_PUBLIC_UPLOAD_MAX_BYTES: "104857600"
-      #NEXT_PUBLIC_APP_ENV: local
-    #steps:
-      #- uses: actions/checkout@v4
-      #- uses: pnpm/action-setup@v4
-      #- uses: actions/setup-node@v4
-        #with:
-          #node-version-file: .node-version
-          #cache: pnpm
-      #- run: pnpm install --frozen-lockfile
-      #- run: pnpm exec prettier --check .
-      #- run: pnpm exec eslint . --max-warnings=0
-      #- run: pnpm typecheck
-      #- run: pnpm api:generate && git diff --exit-code src/shared/api/generated
-      #- run: pnpm test:coverage
-      #- run: pnpm build
-      #- run: node scripts/check-export.mjs
+#check:
+#runs-on: ubuntu-latest
+#env:
+#NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+#NEXT_PUBLIC_UPLOAD_MAX_BYTES: "104857600"
+#NEXT_PUBLIC_APP_ENV: local
+#steps:
+#- uses: actions/checkout@v4
+#- uses: pnpm/action-setup@v4
+#- uses: actions/setup-node@v4
+#with:
+#node-version-file: .node-version
+#cache: pnpm
+#- run: pnpm install --frozen-lockfile
+#- run: pnpm exec prettier --check .
+#- run: pnpm exec eslint . --max-warnings=0
+#- run: pnpm typecheck
+#- run: pnpm api:generate && git diff --exit-code src/shared/api/generated
+#- run: pnpm test:coverage
+#- run: pnpm build
+#- run: node scripts/check-export.mjs
