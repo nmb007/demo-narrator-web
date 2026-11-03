@@ -35,7 +35,7 @@ const errorMiddleware: Middleware = {
     }
     const requestId = request.headers.get("X-Request-ID") ?? "";
     const body: unknown = await response.json().catch(() => null);
-    if (response.status === 401) {
+    if (response.status === 401 && request.headers.get("Authorization")) {
       clearSession();
     }
     throw normalizeFastApiError(response.status, body, requestId);

@@ -5,6 +5,7 @@ import {
   getSnapshot,
   setSession,
   subscribe,
+  takeSessionEnd,
 } from "@/shared/session/session-store";
 import { testToken } from "../../../tests/token";
 
@@ -34,6 +35,26 @@ describe("session store", () => {
     window.dispatchEvent(new StorageEvent("storage", { key: "dn.session" }));
     expect(getSnapshot()).toBeNull();
     expect(localStorage.getItem("dn.session")).toBeNull();
+    expect(takeSessionEnd()).toBe("expired");
+  });
+
+  it("drops a stored value that is not a token", () => {
+    getSnapshot();
+    localStorage.setItem("dn.session", JSON.stringify({ token: 1 }));
+    window.dispatchEvent(new StorageEvent("storage", { key: "dn.session" }));
+    expect(getSnapshot()).toBeNull();
+    expect(takeSessionEnd()).toBe("expired");
+  });
+
+  it("keeps the expired mark if the session is cleared again", () => {
+    getSnapshot();
+    localStorage.setItem(
+      "dn.session",
+      JSON.stringify({ token: testToken({}, -10) }),
+    );
+    window.dispatchEvent(new StorageEvent("storage", { key: "dn.session" }));
+    clearSession();
+    expect(takeSessionEnd()).toBe("expired");
   });
 
   it("drops an expired token", () => {
@@ -44,6 +65,7 @@ describe("session store", () => {
     );
     window.dispatchEvent(new StorageEvent("storage", { key: "dn.session" }));
     expect(getSnapshot()).toBeNull();
+    expect(takeSessionEnd()).toBe("expired");
   });
 
   it("refuses to store an expired token", () => {
@@ -56,6 +78,27 @@ describe("session store", () => {
     expect(getSnapshot()?.email).toBe("you@example.com");
     vi.advanceTimersByTime(2_000);
     expect(getSnapshot()).toBeNull();
+    expect(takeSessionEnd()).toBe("expired");
+  });
+
+  it("records logout separately from expiry", () => {
+    setSession(testToken());
+    clearSession("logout");
+    expect(getSnapshot()).toBeNull();
+    expect(takeSessionEnd()).toBe("logout");
+  });
+
+  it("does not record an end when nothing is stored", () => {
+    clearSession();
+    expect(takeSessionEnd()).toBeNull();
+  });
+
+  it("does not treat another tab logging out as expiry", () => {
+    setSession(testToken());
+    localStorage.removeItem("dn.session");
+    window.dispatchEvent(new StorageEvent("storage", { key: "dn.session" }));
+    expect(getSnapshot()).toBeNull();
+    expect(takeSessionEnd()).toBeNull();
   });
 
   it("updates subscribers when another tab changes the token", () => {

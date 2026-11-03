@@ -10,7 +10,10 @@ export type Session = {
 
 const listeners = new Set<() => void>();
 
+export type SessionEnd = "logout" | "expired";
+
 let session: Session | null = null;
+let sessionEnd: SessionEnd | null = null;
 let loaded = false;
 let listening = false;
 let expiryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -35,6 +38,16 @@ export function getToken(): string | null {
   return getSnapshot()?.token ?? null;
 }
 
+export function peekSessionEnd(): SessionEnd | null {
+  return sessionEnd;
+}
+
+export function takeSessionEnd(): SessionEnd | null {
+  const reason = sessionEnd;
+  sessionEnd = null;
+  return reason;
+}
+
 export function setSession(token: string): void {
   const claims = readClaims(token);
   if (!claims || claims.exp * 1000 <= Date.now()) {
@@ -47,17 +60,22 @@ export function setSession(token: string): void {
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ token }));
   session = next;
+  sessionEnd = null;
   loaded = true;
   ensureListening();
   armExpiry();
   emit();
 }
 
-export function clearSession(): void {
+export function clearSession(reason: SessionEnd = "expired"): void {
+  const ending = session !== null;
   if (typeof window !== "undefined") {
     localStorage.removeItem(STORAGE_KEY);
   }
   session = null;
+  if (ending) {
+    sessionEnd = reason;
+  }
   loaded = true;
   ensureListening();
   clearExpiry();
@@ -94,17 +112,14 @@ function readStoredSession(): Session | null {
   try {
     parsed = JSON.parse(raw);
   } catch {
-    localStorage.removeItem(STORAGE_KEY);
-    return null;
+    return discardStoredSession();
   }
   if (!isTokenRecord(parsed)) {
-    localStorage.removeItem(STORAGE_KEY);
-    return null;
+    return discardStoredSession();
   }
   const claims = readClaims(parsed.token);
   if (!claims || claims.exp * 1000 <= Date.now()) {
-    localStorage.removeItem(STORAGE_KEY);
-    return null;
+    return discardStoredSession();
   }
   return {
     token: parsed.token,
@@ -117,9 +132,19 @@ function onStorage(event: StorageEvent): void {
   if (event.key !== STORAGE_KEY) {
     return;
   }
+  const hadValue = localStorage.getItem(STORAGE_KEY) !== null;
   session = readStoredSession();
+  if (session || !hadValue) {
+    sessionEnd = null;
+  }
   armExpiry();
   emit();
+}
+
+function discardStoredSession(): null {
+  localStorage.removeItem(STORAGE_KEY);
+  sessionEnd = "expired";
+  return null;
 }
 
 function armExpiry(): void {

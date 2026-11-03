@@ -2,11 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createApiClient } from "@/shared/api/client";
 import { ApiError } from "@/shared/api/errors";
-import {
-  clearSession,
-  getToken,
-  setSession,
-} from "@/shared/session/session-store";
+import * as sessionStore from "@/shared/session/session-store";
 import { testToken } from "../../../tests/token";
 
 function jsonResponse(status: number, body: unknown): Response {
@@ -18,9 +14,11 @@ function jsonResponse(status: number, body: unknown): Response {
 
 describe("api client", () => {
   it("sends a request id and the bearer token", async () => {
-    setSession(testToken());
+    sessionStore.setSession(testToken());
     const fetchImpl = vi.fn(async (request: Request) => {
-      expect(request.headers.get("Authorization")).toBe(`Bearer ${getToken()}`);
+      expect(request.headers.get("Authorization")).toBe(
+        `Bearer ${sessionStore.getToken()}`,
+      );
       expect(request.headers.get("X-Request-ID")).toBeTruthy();
       return jsonResponse(201, {
         id: "11111111-1111-1111-1111-111111111111",
@@ -35,8 +33,8 @@ describe("api client", () => {
     expect(result.data?.email).toBe("you@example.com");
   });
 
-  it("clears the session on a 401", async () => {
-    setSession(testToken());
+  it("clears the session on a 401 that carried a token", async () => {
+    sessionStore.setSession(testToken());
     const client = createApiClient(async () =>
       jsonResponse(401, { detail: "Invalid credentials" }),
     );
@@ -45,7 +43,27 @@ describe("api client", () => {
         body: { email: "you@example.com", password: "password123" },
       }),
     ).rejects.toMatchObject({ status: 401 });
-    expect(getToken()).toBeNull();
+    expect(sessionStore.getToken()).toBeNull();
+    expect(sessionStore.takeSessionEnd()).toBe("expired");
+  });
+
+  it("does not clear the session on a 401 that sent no token", async () => {
+    sessionStore.clearSession();
+    const spy = vi.spyOn(sessionStore, "clearSession");
+    try {
+      const client = createApiClient(async (request: Request) => {
+        expect(request.headers.get("Authorization")).toBeNull();
+        return jsonResponse(401, { detail: "Invalid credentials" });
+      });
+      await expect(
+        client.POST("/v1/auth/signup", {
+          body: { email: "you@example.com", password: "password123" },
+        }),
+      ).rejects.toMatchObject({ status: 401 });
+      expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it("maps a 422 body onto field errors", async () => {
@@ -96,7 +114,7 @@ describe("api client", () => {
 
 describe("session cleanup between client tests", () => {
   it("starts signed out", () => {
-    clearSession();
-    expect(getToken()).toBeNull();
+    sessionStore.clearSession();
+    expect(sessionStore.getToken()).toBeNull();
   });
 });
