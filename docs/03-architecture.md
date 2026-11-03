@@ -272,4 +272,4 @@ flowchart LR
   - The backend runs with `docker compose up` in `../demo-narrator`, with `CORS_ALLOW_ORIGINS` including `http://localhost:3000`.
   - The frontend runs on the host with `pnpm dev` and `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`.
   - Production-like testing uses `pnpm build` and then `pnpm serve:out`, which serves `out/` on port 3000.
-- **Contract sync.** `pnpm api:export` fetches `http://localhost:8000/openapi.json` into `openapi/openapi.json`. `pnpm api:generate` then regenerates the types.
+- **Contract sync.** `pnpm api:export` reads `NEXT_PUBLIC_API_BASE_URL` from the environment or `.env.local` and fetches `/openapi.json` from that origin into `openapi/openapi.json`. `pnpm api:generate` then regenerates the types.
