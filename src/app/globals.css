@@ -42,6 +42,7 @@
   --color-bay: var(--bay);
   --color-sand: var(--sand);
   --color-copper: var(--copper);
+  --color-copper-deep: var(--copper-deep);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -74,6 +75,7 @@
   --bay: oklch(0.22 0.006 85);
   --sand: oklch(0.78 0.03 85);
   --copper: oklch(0.62 0.12 55);
+  --copper-deep: oklch(0.4 0.06 55);
   --chart-1: oklch(0.87 0.02 85);
   --chart-2: oklch(0.556 0.02 75);
   --chart-3: oklch(0.439 0.02 75);
