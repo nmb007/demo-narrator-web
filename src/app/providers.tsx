@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -13,9 +14,11 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
-      <SessionRedirect />
-      <Toaster />
+      <MotionConfig reducedMotion="user">
+        {children}
+        <SessionRedirect />
+        <Toaster />
+      </MotionConfig>
     </QueryClientProvider>
   );
 }

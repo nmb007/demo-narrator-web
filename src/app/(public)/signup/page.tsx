@@ -1,17 +1,25 @@
 import { SignupForm } from "@/features/auth/components/signup-form";
+import { SignupPitch } from "@/features/auth/components/signup-pitch";
 
 export default function SignupPage() {
   return (
-    <main className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Create an account
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Use the email and password you will sign in with.
-        </p>
-      </div>
-      <SignupForm />
+    <main className="flex min-h-dvh flex-1 flex-col lg:flex-row">
+      <section className="flex flex-1 lg:max-w-[58%]">
+        <SignupPitch />
+      </section>
+      <section className="bg-background flex flex-1 items-center justify-center p-8 lg:p-12">
+        <div className="flex w-full max-w-md flex-col gap-8">
+          <div className="flex flex-col gap-2">
+            <p className="font-heading text-foreground text-3xl tracking-tight">
+              Demo Narrator
+            </p>
+            <p className="text-muted-foreground text-sm">
+              Create an account to narrate your first demo.
+            </p>
+          </div>
+          <SignupForm />
+        </div>
+      </section>
     </main>
   );
 }

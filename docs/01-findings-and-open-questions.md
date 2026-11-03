@@ -113,7 +113,7 @@ The previous revision asked two questions that depended on having a Next.js serv
 | Whisper model choices | Under "Advanced": `tiny`, `base`, `small` (default), `medium`, `large-v3` |
 | `max_atempo` | Under "Advanced": 1.0–2.0, default 1.2 |
 | Full-pipeline E2E | Run on demand or nightly, because it needs a Groq key and internet access. Pull-request E2E covers everything up to `running`. |
-| Visual design | shadcn/ui defaults with a neutral palette. Dark mode follows the system setting. |
+| Visual design | Edit-bay theme: warm paper background, charcoal ink, sand text on the pitch panel, copper for the playhead only. Source Serif 4 for headlines; Geist Sans for UI. Dark mode tokens stay unused on signup. |
 
 ## 1.6 Backend changes
 

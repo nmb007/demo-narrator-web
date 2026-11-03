@@ -8,6 +8,9 @@ test.describe("signup @fast", () => {
   }) => {
     const email = `signup-${Date.now()}@example.com`;
     await page.goto("/signup");
+    await expect(
+      page.getByRole("heading", { name: "You speak, We narrate." }),
+    ).toBeVisible();
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill("password123");
     await page.getByRole("button", { name: "Create account" }).click();

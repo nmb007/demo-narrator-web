@@ -7,9 +7,7 @@
   "paths": {
     "/v1/auth/signup": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Sign up",
         "description": "Create a new user account.",
         "operationId": "signup_v1_auth_signup_post",
@@ -67,9 +65,7 @@
     },
     "/v1/auth/login": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Log in",
         "description": "Exchange email and password for a JWT access token.",
         "operationId": "login_v1_auth_login_post",
@@ -126,9 +122,7 @@
     },
     "/v1/narrate": {
       "post": {
-        "tags": [
-          "narration"
-        ],
+        "tags": ["narration"],
         "summary": "Narrate a video",
         "description": "Upload a video and queue the full narration pipeline.",
         "operationId": "narrate_v1_narrate_post",
@@ -154,12 +148,7 @@
                   "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                   "video_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                   "status": "queued",
-                  "steps": [
-                    "transcribe",
-                    "rewrite",
-                    "voice",
-                    "mux"
-                  ]
+                  "steps": ["transcribe", "rewrite", "voice", "mux"]
                 }
               }
             }
@@ -237,9 +226,7 @@
     },
     "/v1/videos/{video_id}/retry": {
       "post": {
-        "tags": [
-          "narration"
-        ],
+        "tags": ["narration"],
         "summary": "Retry narration steps",
         "description": "Re-run one or more pipeline steps for an existing video.",
         "operationId": "retry_v1_videos__video_id__retry_post",
@@ -282,12 +269,7 @@
                   "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                   "video_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                   "status": "queued",
-                  "steps": [
-                    "transcribe",
-                    "rewrite",
-                    "voice",
-                    "mux"
-                  ]
+                  "steps": ["transcribe", "rewrite", "voice", "mux"]
                 }
               }
             }
@@ -359,9 +341,7 @@
     },
     "/v1/runs/{run_id}": {
       "get": {
-        "tags": [
-          "narration"
-        ],
+        "tags": ["narration"],
         "summary": "Get run status",
         "operationId": "get_run_status_v1_runs__run_id__get",
         "security": [
@@ -393,12 +373,7 @@
                   "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                   "video_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                   "status": "running",
-                  "steps": [
-                    "transcribe",
-                    "rewrite",
-                    "voice",
-                    "mux"
-                  ],
+                  "steps": ["transcribe", "rewrite", "voice", "mux"],
                   "current_step": "rewrite",
                   "created_at": "2026-01-15T12:00:00Z",
                   "started_at": "2026-01-15T12:00:05Z"
@@ -460,9 +435,7 @@
     },
     "/v1/videos/{video_id}/download": {
       "get": {
-        "tags": [
-          "narration"
-        ],
+        "tags": ["narration"],
         "summary": "Download latest narrated video",
         "operationId": "download_video_v1_videos__video_id__download_get",
         "security": [
@@ -638,10 +611,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "username",
-          "password"
-        ],
+        "required": ["username", "password"],
         "title": "Body_login_v1_auth_login_post"
       },
       "Body_narrate_v1_narrate_post": {
@@ -686,9 +656,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "video"
-        ],
+        "required": ["video"],
         "title": "Body_narrate_v1_narrate_post"
       },
       "ErrorResponse": {
@@ -700,9 +668,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "detail"
-        ],
+        "required": ["detail"],
         "title": "ErrorResponse",
         "description": "Standard HTTP error body returned by FastAPI ``HTTPException``."
       },
@@ -721,12 +687,7 @@
       },
       "NarrationStep": {
         "type": "string",
-        "enum": [
-          "transcribe",
-          "rewrite",
-          "voice",
-          "mux"
-        ],
+        "enum": ["transcribe", "rewrite", "voice", "mux"],
         "title": "NarrationStep"
       },
       "RetryRequest": {
@@ -807,35 +768,20 @@
           }
         },
         "type": "object",
-        "required": [
-          "run_id",
-          "video_id",
-          "status",
-          "steps"
-        ],
+        "required": ["run_id", "video_id", "status", "steps"],
         "title": "RunResponse",
         "examples": [
           {
             "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
             "status": "queued",
-            "steps": [
-              "transcribe",
-              "rewrite",
-              "voice",
-              "mux"
-            ],
+            "steps": ["transcribe", "rewrite", "voice", "mux"],
             "video_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
           }
         ]
       },
       "RunStatus": {
         "type": "string",
-        "enum": [
-          "queued",
-          "running",
-          "succeeded",
-          "failed"
-        ],
+        "enum": ["queued", "running", "succeeded", "failed"],
         "title": "RunStatus"
       },
       "RunStatusResponse": {
@@ -912,13 +858,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "run_id",
-          "video_id",
-          "status",
-          "steps",
-          "created_at"
-        ],
+        "required": ["run_id", "video_id", "status", "steps", "created_at"],
         "title": "RunStatusResponse",
         "examples": [
           {
@@ -927,12 +867,7 @@
             "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
             "started_at": "2026-01-15T12:00:05Z",
             "status": "running",
-            "steps": [
-              "transcribe",
-              "rewrite",
-              "voice",
-              "mux"
-            ],
+            "steps": ["transcribe", "rewrite", "voice", "mux"],
             "video_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
           }
         ]
@@ -952,10 +887,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "title": "SignupRequest"
       },
       "TokenResponse": {
@@ -971,9 +903,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "access_token"
-        ],
+        "required": ["access_token"],
         "title": "TokenResponse",
         "examples": [
           {
@@ -1001,11 +931,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "email",
-          "created_at"
-        ],
+        "required": ["id", "email", "created_at"],
         "title": "UserResponse",
         "examples": [
           {
@@ -1048,11 +974,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     },
