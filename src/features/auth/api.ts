@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import type { Signup } from "@/features/auth/schemas";
+import type { Login, Signup } from "@/features/auth/schemas";
 import { apiClient } from "@/shared/api/client";
 import { ApiError } from "@/shared/api/errors";
 import { setSession } from "@/shared/session/session-store";
@@ -18,6 +18,21 @@ export function useSignup() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: signupAndStoreSession,
+    onSuccess: () => {
+      queryClient.clear();
+    },
+  });
+}
+
+export async function loginAndStoreSession(input: Login): Promise<void> {
+  const token = await loginWithPassword(input.username, input.password);
+  setSession(token);
+}
+
+export function useLogin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: loginAndStoreSession,
     onSuccess: () => {
       queryClient.clear();
     },

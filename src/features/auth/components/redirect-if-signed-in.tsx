@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
+import { SIGNED_IN_PATH, safeAppRoute } from "@/features/auth/login-path";
 import { useHydrated, useSession } from "@/shared/session/use-session";
 
 export function RedirectIfSignedIn({ children }: { children: ReactNode }) {
@@ -11,9 +12,11 @@ export function RedirectIfSignedIn({ children }: { children: ReactNode }) {
   const session = useSession();
 
   useEffect(() => {
-    if (hydrated && session) {
-      router.replace("/home");
+    if (!hydrated || !session) {
+      return;
     }
+    const next = new URLSearchParams(window.location.search).get("next");
+    router.replace(safeAppRoute(next, SIGNED_IN_PATH));
   }, [hydrated, router, session]);
 
   if (hydrated && session) {

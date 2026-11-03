@@ -10,6 +10,7 @@ import {
   signupFormMessage,
   SIGNUP_FAILED_MESSAGE,
 } from "@/features/auth/errors";
+import { SIGNED_IN_PATH } from "@/features/auth/login-path";
 import { SignupSchema, type Signup } from "@/features/auth/schemas";
 import { ApiError } from "@/shared/api/errors";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
@@ -29,7 +30,7 @@ export function SignupForm() {
   function onSubmit(values: Signup) {
     signup.mutate(values, {
       onSuccess: () => {
-        router.replace("/home");
+        router.replace(SIGNED_IN_PATH);
       },
       onError: (error) => {
         if (!(error instanceof ApiError)) {

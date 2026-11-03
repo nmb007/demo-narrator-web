@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { SignupForm } from "@/features/auth/components/signup-form";
 import { SignupPitch } from "@/features/auth/components/signup-pitch";
 
@@ -18,6 +20,15 @@ export default function SignupPage() {
             </p>
           </div>
           <SignupForm />
+          <p className="text-muted-foreground text-sm">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-foreground focus-visible:ring-ring rounded-sm font-medium underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+            >
+              Log in
+            </Link>
+          </p>
         </div>
       </section>
     </main>

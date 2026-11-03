@@ -16,9 +16,9 @@ test.describe("signup @fast", () => {
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page.getByText(email)).toBeVisible();
     await page.getByRole("button", { name: "Log out" }).click();
-    await expect(page).toHaveURL(/\/signup$/);
+    await expect(page).toHaveURL(/\/login$/);
     await page.goto("/home");
-    await expect(page).toHaveURL(/\/signup$/);
+    await expect(page).toHaveURL(/\/login\?next=/);
   });
 
   test("shows a taken email on the email field", async ({ page }) => {

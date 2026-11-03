@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 const required = [
   "out/index.html",
   "out/signup.html",
+  "out/login.html",
   "out/home.html",
   "out/404.html",
   "out/_headers",
@@ -14,4 +15,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("Static export contains the Phase 1 routes.");
+console.log("Static export contains the expected routes.");

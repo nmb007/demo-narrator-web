@@ -13,9 +13,9 @@ export function SignedInHome() {
   const router = useRouter();
 
   function logout() {
-    clearSession();
+    clearSession("logout");
     queryClient.clear();
-    router.replace("/signup");
+    router.replace("/login");
   }
 
   return (
