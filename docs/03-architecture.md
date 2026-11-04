@@ -147,7 +147,7 @@ sequenceDiagram
 | Storage | The `localStorage` key `dn.session` holds `{token}`. The store is a module with `get`, `set`, `clear`, and `subscribe`, which React reads through `useSession()` (`useSyncExternalStore`). |
 | Cross-tab | The store listens for the `storage` event. When another tab logs in, logs out, or hits a 401, this tab updates too and redirects if it needs to. |
 | Claims | `decodeJwt(token)` is parsed with a Zod schema `{sub, email, exp}`. If the token is malformed or `exp` has passed, the store clears the session. |
-| Login | A React Hook Form form calls a mutation that POSTs form-urlencoded data to `/v1/auth/login`. On success it calls `session.set(token)`, clears the query cache, and runs `router.replace(safeNext ?? '/videos/new')`. |
+| Login | A React Hook Form form calls a mutation that POSTs form-urlencoded data to `/v1/auth/login`. On success it calls `session.set(token)`, clears the query cache, and runs `router.replace(safeNext ?? '/videos')`. |
 | Signup | A mutation POSTs to `/v1/auth/signup`. On `201` it logs in with the same credentials. A `409` becomes a field error on email. |
 | Logout | `session.clear()`, then `queryClient.clear()`, then `router.replace('/login')`. **Limitation:** the token stays valid on the server until `exp`, because the backend has no revocation endpoint. |
 | Expiry | The store sets a timer for `exp`, and when it fires the session ends the same way it does on a 401. |
@@ -215,11 +215,11 @@ Mapping a status code to a message happens **in the feature**, because the same 
 
 | URL | Group | Access | Purpose | Phase |
 |---|---|---|---|---|
-| `/` | `(public)` | any | Client redirect: `/home` in Phase 1, then `/videos/new` once upload exists. Signed out goes to `/signup` in Phase 1, then `/login` once that page exists. | 1 |
+| `/` | `(public)` | any | Client redirect: `/home` in Phase 1, then `/videos` once the library exists. Signed out goes to `/signup` in Phase 1, then `/login` once that page exists. | 1 |
 | `/signup` | `(public)` | signed out | Signup. Success stores the token and opens `/home`. | 1 |
 | `/home` | `(app)` | signed in | Phase 1 placeholder. Shows the email from the token and logs out back to `/signup`. | 1 |
 | `/login` | `(public)` | signed out | Login, plus the `?reason=expired` notice | 2 |
-| `/videos/new` | `(app)` | signed in | Upload form and options | 2 |
+| `/videos/upload` | `(app)` | signed in | Upload form and options | 2 |
 | `/run?id=<run_id>` | `(app)` | signed in | Status, polling, error, download, preview, retry | 2 (preview and retry in 3) |
 | `/videos` | `(app)` | signed in | Library | 4 (needs backend) |
 | `/video?id=<video_id>` | `(app)` | signed in | Video detail and run history | 4 (needs backend) |

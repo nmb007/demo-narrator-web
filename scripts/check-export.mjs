@@ -5,6 +5,8 @@ const required = [
   "out/signup.html",
   "out/login.html",
   "out/home.html",
+  "out/videos.html",
+  "out/videos/upload.html",
   "out/404.html",
   "out/_headers",
 ];

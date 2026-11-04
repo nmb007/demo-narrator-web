@@ -62,7 +62,7 @@ Versions were checked on the npm registry on 2026-10-30. Behavior was checked ag
 ### 2.3.3 Routing: the Next.js App Router, and nothing else
 
 - **Choice.** The App Router that ships with Next.js. No second routing library.
-  - A file under `src/app/` is a route: `(public)/login/page.tsx` is `/login`, `(app)/videos/new/page.tsx` is `/videos/new`.
+  - A file under `src/app/` is a route: `(public)/login/page.tsx` is `/login`, `(app)/videos/upload/page.tsx` is `/videos/upload`.
   - Route groups `(public)` and `(app)` share layouts without adding a URL segment.
   - `layout`, `page`, `error`, `not-found`, and `global-error` are the Next.js file conventions.
   - `<Link>` and `useRouter()` from `next/navigation` do the client-side navigation. `typedRoutes: true` makes a bad `href` a type error.

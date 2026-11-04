@@ -33,8 +33,8 @@ demo-narrator-frontend/
 │   │       ├── layout.tsx               # <RequireSession> + AppShell (header, user menu)
 │   │       ├── error.tsx                # Segment error boundary
 │   │       ├── videos/
-│   │       │   ├── new/page.tsx         # Upload
-│   │       │   └── page.tsx             # (P4) Library
+│   │       │   ├── upload/page.tsx      # Upload
+│   │       │   └── page.tsx             # Library
 │   │       ├── video/page.tsx           # (P4) ?id= video detail
 │   │       └── run/page.tsx             # ?id= run status (Suspense around useSearchParams)
 │   │
@@ -61,7 +61,7 @@ demo-narrator-frontend/
 │   │       │   └── use-object-url.ts    # Blob URL lifecycle (revoke on unmount)
 │   │       └── components/
 │   │           ├── upload-form.tsx
-│   │           ├── narration-options-fields.tsx   # voice/model/max_atempo (upload + retry)
+│   │           ├── narration-options-fields.tsx   # voice/model/max_atempo (upload + retry later)
 │   │           ├── run-view.tsx                   # Reads ?id, owns query + states
 │   │           ├── run-status-card.tsx
 │   │           ├── step-timeline.tsx

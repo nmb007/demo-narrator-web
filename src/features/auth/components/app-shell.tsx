@@ -26,6 +26,7 @@ import { TooltipProvider } from "@/shared/ui/tooltip";
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const onLibrary = pathname === "/videos";
+  const onUpload = pathname === "/videos/upload";
 
   return (
     <TooltipProvider>
@@ -61,13 +62,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      disabled
-                      aria-disabled
-                      tooltip="Coming soon"
-                      title="Coming soon"
+                      asChild
+                      isActive={onUpload}
+                      tooltip="Upload video"
                     >
-                      <UploadIcon />
-                      <span>Upload video</span>
+                      <Link href="/videos/upload">
+                        <UploadIcon />
+                        <span>Upload video</span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>

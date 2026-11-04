@@ -26,7 +26,7 @@ All checks run on the host with pnpm and Node 24. The backend runs in Docker onl
 | Contract | `pnpm api:generate && git diff --exit-code src/shared/api/generated` | The generated types differ from the committed `openapi.json` |
 | Unit | `vitest run --coverage` | A test fails, or coverage of the pure modules in 6.4 drops below the threshold |
 | Build | `next build` (with CI env values) | Same as row 5 in 6.1 |
-| Output check | A script asserts that `out/` contains `index.html`, `login.html`, `videos/new.html`, `run.html`, `404.html`, and `_headers` | A route or the headers file is missing from the export |
+| Output check | A script asserts that `out/` contains `index.html`, `login.html`, `videos/upload.html`, `run.html`, `404.html`, and `_headers` | A route or the headers file is missing from the export |
 | Bundle budget | A script sums the gzipped JS loaded on first visit to each route and compares it to the budget (for example 180 kB) | The budget is exceeded. This matters because everything renders on the client. |
 | E2E (fast) | Playwright on Chromium. It serves `out/` on `:3000`, and the backend Compose stack (`db`, `redis`, `api`, `worker`) runs with CORS for `http://localhost:3000`. Journeys hit the real API. | Any journey fails. Traces and screenshots are uploaded. |
 | Deploy preview | CDN preview build for the PR | The build or deploy fails |

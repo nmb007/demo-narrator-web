@@ -3,7 +3,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Toaster } from "sonner";
 
 import { loginRedirect } from "@/features/auth/login-path";
 import { makeQueryClient } from "@/shared/query/query-client";
@@ -12,6 +11,7 @@ import {
   peekSessionEnd,
   subscribe,
 } from "@/shared/session/session-store";
+import { Toaster } from "@/shared/ui/sonner";
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(makeQueryClient);

@@ -72,8 +72,20 @@ const eslintConfig = defineConfig([
   },
   {
     files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/shared/ui/sonner.tsx"],
     rules: {
-      "no-restricted-imports": ["error", { paths: serverOnlyImports }],
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            ...serverOnlyImports,
+            {
+              name: "sonner",
+              message: "Import toast from @/shared/ui/sonner.",
+            },
+          ],
+        },
+      ],
     },
   },
   {
@@ -83,6 +95,7 @@ const eslintConfig = defineConfig([
       "src/features/*/transport/**",
       "src/**/*.test.ts",
       "src/**/*.test.tsx",
+      "src/shared/ui/sonner.tsx",
     ],
     rules: {
       "no-restricted-imports": [
@@ -93,6 +106,10 @@ const eslintConfig = defineConfig([
             {
               name: "@/shared/api/client",
               message: "Call the API from the feature's api.ts.",
+            },
+            {
+              name: "sonner",
+              message: "Import toast from @/shared/ui/sonner.",
             },
           ],
         },

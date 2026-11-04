@@ -66,7 +66,7 @@ A public HTTPS API is not required for this phase. Local FastAPI is enough.
 This is the rest of the first end-to-end path. It starts only after the Phase 1 review.
 
 - **Login and logout.** `/login` with the `?reason=expired` and `?next=` round trip, the `(app)` guard, the user menu, the expiry timer, and the global 401 handling.
-- **Upload.** `/videos/new` with client checks for extension and size, the advanced options, progress, cancel, and inline 413/415/422 errors. Success seeds the new run into the cache and opens `/run?id=…`.
+- **Upload.** `/videos/upload` with client checks for extension and size, the advanced options, progress, cancel, and inline 413/415/422 errors. Success shows a toast, refreshes the library, and opens `/videos`.
 - **Run status.** The step timeline, polling, the failure message, `loading` and not-found states.
 - **Download.** A Blob download, enabled only when the run succeeded and included `mux`.
 - **Spikes,** each recorded as an ADR: a 100 MB cross-origin upload, a Blob download in Chrome, Firefox, and Safari, and the session guard on a built `out/` with no hydration warning.
