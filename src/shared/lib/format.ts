@@ -15,6 +15,8 @@ const relativeFormatter = new Intl.RelativeTimeFormat("en", {
   numeric: "auto",
 });
 
+const BYTE_UNITS = ["B", "KB", "MB", "GB", "TB"] as const;
+
 export function formatRelativeTime(
   iso: string,
   now: Date = new Date(),
@@ -32,4 +34,22 @@ export function formatRelativeTime(
     duration /= division.amount;
   }
   return relativeFormatter.format(Math.round(duration), "year");
+}
+
+export function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes < 0) {
+    return "0 B";
+  }
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < BYTE_UNITS.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  const unit = BYTE_UNITS[unitIndex] ?? "B";
+  if (unitIndex === 0) {
+    return `${Math.round(value)} ${unit}`;
+  }
+  const rounded = Math.round(value * 10) / 10;
+  return `${Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1)} ${unit}`;
 }

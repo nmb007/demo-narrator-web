@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ClapperboardIcon, UploadIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -183,11 +184,12 @@ function VideoListEmpty() {
           next polished demo starts here.
         </p>
       </div>
-      <Button type="button" disabled title="Coming soon" className="gap-2">
-        <UploadIcon />
-        Upload video
+      <Button asChild className="gap-2">
+        <Link href="/videos/upload">
+          <UploadIcon />
+          Upload video
+        </Link>
       </Button>
-      <p className="text-muted-foreground text-xs">Upload is coming soon.</p>
     </div>
   );
 }

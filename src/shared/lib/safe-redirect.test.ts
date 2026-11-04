@@ -11,7 +11,7 @@ describe("safeRedirect", () => {
 
   it("uses the fallback for missing or external targets", () => {
     expect(safeRedirect(null)).toBe("/videos");
-    expect(safeRedirect(undefined, "/videos/new")).toBe("/videos/new");
+    expect(safeRedirect(undefined, "/videos/upload")).toBe("/videos/upload");
     expect(safeRedirect("")).toBe("/videos");
     expect(safeRedirect("https://evil.example/videos")).toBe("/videos");
     expect(safeRedirect("//evil.example")).toBe("/videos");
