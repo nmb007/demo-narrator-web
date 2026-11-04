@@ -4,7 +4,7 @@ const BLOCKED_PATHS = new Set(["/", "/login", "/signup"]);
 
 export function safeRedirect(
   candidate: string | null | undefined,
-  fallback = "/home",
+  fallback = "/videos",
 ): string {
   if (candidate == null) {
     return fallback;
