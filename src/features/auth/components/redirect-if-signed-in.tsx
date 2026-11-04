@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
+import { AuthStatusScreen } from "@/features/auth/components/auth-status-screen";
 import { SIGNED_IN_PATH, safeAppRoute } from "@/features/auth/login-path";
 import { useHydrated, useSession } from "@/shared/session/use-session";
 
@@ -20,7 +21,7 @@ export function RedirectIfSignedIn({ children }: { children: ReactNode }) {
   }, [hydrated, router, session]);
 
   if (hydrated && session) {
-    return <p aria-busy="true">Opening your account…</p>;
+    return <AuthStatusScreen message="Opening your account…" />;
   }
 
   return children;

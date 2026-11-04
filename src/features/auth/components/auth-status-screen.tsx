@@ -1,0 +1,142 @@
+"use client";
+
+import { useSyncExternalStore } from "react";
+
+import { BrandMark } from "@/features/auth/components/brand-mark";
+import { GhostFibers } from "@/features/auth/components/ghost-fibers";
+
+const FIBER_COLORS = {
+  glow: "oklch(0.62 0.12 55)",
+  line: "oklch(0.78 0.03 85)",
+  secondary: "oklch(0.4 0.06 55)",
+} as const;
+
+type FiberColors = {
+  glow: string;
+  line: string;
+  secondary: string;
+};
+
+let fiberColors: FiberColors = FIBER_COLORS;
+let fiberColorsResolved = false;
+
+function subscribeFiberColors() {
+  return () => {};
+}
+
+function themeColor(
+  style: CSSStyleDeclaration,
+  name: string,
+  fallback: string,
+) {
+  const value = style.getPropertyValue(name).trim();
+  return value.length > 0 ? value : fallback;
+}
+
+function getFiberColorsSnapshot(): FiberColors {
+  if (fiberColorsResolved) {
+    return fiberColors;
+  }
+  fiberColorsResolved = true;
+  const style = getComputedStyle(document.documentElement);
+  const next = {
+    glow: themeColor(style, "--copper", FIBER_COLORS.glow),
+    line: themeColor(style, "--sand", FIBER_COLORS.line),
+    secondary: themeColor(style, "--copper-deep", FIBER_COLORS.secondary),
+  };
+  if (
+    next.glow === FIBER_COLORS.glow &&
+    next.line === FIBER_COLORS.line &&
+    next.secondary === FIBER_COLORS.secondary
+  ) {
+    return FIBER_COLORS;
+  }
+  fiberColors = next;
+  return fiberColors;
+}
+
+function getFiberColorsServerSnapshot() {
+  return FIBER_COLORS;
+}
+
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+  media.addEventListener("change", onStoreChange);
+  return () => {
+    media.removeEventListener("change", onStoreChange);
+  };
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
+
+type AuthStatusScreenProps = {
+  message: string;
+};
+
+/** Full-viewport gate while session hydrates or a redirect is about to fire. */
+export function AuthStatusScreen({ message }: AuthStatusScreenProps) {
+  const reduceMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
+  );
+
+  const fiberColors = useSyncExternalStore(
+    subscribeFiberColors,
+    getFiberColorsSnapshot,
+    getFiberColorsServerSnapshot,
+  );
+
+  return (
+    <div
+      className="bg-bay text-sand relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6"
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <GhostFibers
+          glowColor={fiberColors.glow}
+          lineColor={fiberColors.line}
+          secondaryColor={fiberColors.secondary}
+          gradient="depth"
+          fiberStyle="dots"
+          layers={3}
+          speed={0.42}
+          glow={0.9}
+          brightness={1.15}
+          foldGlow={1.35}
+          particles={0.4}
+          sparkle={0.45}
+          vignette={0.22}
+          grain={0.05}
+          mouseInteraction={false}
+          hoverEffect="none"
+          pulseOnClick={false}
+          intro
+          paused={reduceMotion}
+        />
+      </div>
+      <div
+        className="from-bay/70 via-bay/20 pointer-events-none absolute inset-0 bg-gradient-to-b via-40% to-transparent"
+        aria-hidden
+      />
+      <div className="relative z-10 flex flex-col items-center gap-3">
+        <div className="relative">
+          <div
+            className="bg-bay/70 pointer-events-none absolute -inset-x-4 -inset-y-3 -z-10 rounded-lg blur-md"
+            aria-hidden
+          />
+          <BrandMark tone="on-bay" />
+        </div>
+        <p className="text-sand/80 text-sm tracking-wide">{message}</p>
+      </div>
+    </div>
+  );
+}

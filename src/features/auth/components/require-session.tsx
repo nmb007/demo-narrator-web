@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 
+import { AuthStatusScreen } from "@/features/auth/components/auth-status-screen";
 import { loginRedirect } from "@/features/auth/login-path";
 import { getSnapshot, peekSessionEnd } from "@/shared/session/session-store";
 import { useHydrated, useSession } from "@/shared/session/use-session";
@@ -39,11 +40,7 @@ export function RequireSession({ children }: { children: ReactNode }) {
   }, [hydrated, router, session]);
 
   if (!hydrated || !session) {
-    return (
-      <p className="text-muted-foreground" aria-busy="true">
-        Loading your account…
-      </p>
-    );
+    return <AuthStatusScreen message="Loading your account…" />;
   }
 
   return children;
