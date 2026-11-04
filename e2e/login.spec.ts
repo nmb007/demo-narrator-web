@@ -11,7 +11,7 @@ test.describe("login @fast", () => {
 
     await page.goto("/");
     await expect(page).toHaveURL(/\/login\?next=/);
-    await page.goto("/home");
+    await page.goto("/videos");
     await expect(page).toHaveURL(/\/login\?next=/);
     await expect(page.getByText("Your session expired.")).toHaveCount(0);
 
@@ -19,7 +19,10 @@ test.describe("login @fast", () => {
     await page.getByLabel("Password").fill("password123");
     await page.getByRole("button", { name: "Log in" }).click();
     await expect(page.getByText(email)).toBeVisible();
-    await expect(page).toHaveURL(/\/home$/);
+    await expect(page).toHaveURL(/\/videos$/);
+    await expect(
+      page.getByRole("heading", { name: "Your videos" }),
+    ).toBeVisible();
   });
 
   test("shows an error for a wrong password", async ({ page }) => {
@@ -43,7 +46,7 @@ test.describe("login @fast", () => {
     await page.addInitScript((value) => {
       localStorage.setItem("dn.session", JSON.stringify({ token: value }));
     }, token);
-    await page.goto("/home");
+    await page.goto("/videos");
     await expect(page).toHaveURL(/reason=expired/);
     await expect(page).toHaveURL(/next=/);
     await expect(page.getByText("Your session expired.")).toBeVisible();

@@ -1,0 +1,204 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { ClapperboardIcon, UploadIcon } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+import { videosQuery } from "@/features/narration/api";
+import { latestRunLabel } from "@/features/narration/domain";
+import { videosListMessage } from "@/features/narration/errors";
+import { ApiError } from "@/shared/api/errors";
+import { formatRelativeTime } from "@/shared/lib/format";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Skeleton } from "@/shared/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+
+function parsePage(raw: string | null): number {
+  if (raw == null || raw === "") {
+    return 1;
+  }
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isFinite(value) || value < 1) {
+    return 1;
+  }
+  return value;
+}
+
+export function VideoList() {
+  return (
+    <Suspense fallback={<VideoListSkeleton />}>
+      <VideoListInner />
+    </Suspense>
+  );
+}
+
+function VideoListInner() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = parsePage(searchParams.get("page"));
+  const query = useQuery(videosQuery(page));
+
+  function goToPage(nextPage: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (nextPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(nextPage));
+    }
+    const queryString = params.toString();
+    router.replace(queryString ? `/videos?${queryString}` : "/videos");
+  }
+
+  if (query.isPending) {
+    return <VideoListSkeleton />;
+  }
+
+  if (query.isError) {
+    const apiError =
+      query.error instanceof ApiError
+        ? query.error
+        : new ApiError(0, "We couldn't load your videos. Try again.", {}, "");
+    return (
+      <div className="flex flex-col gap-3" role="alert">
+        <p className="text-foreground text-sm">{videosListMessage(apiError)}</p>
+        {apiError.requestId ? (
+          <p className="text-muted-foreground text-xs">
+            Request ID: {apiError.requestId}
+          </p>
+        ) : null}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-fit"
+          onClick={() => {
+            void query.refetch();
+          }}
+        >
+          Try again
+        </Button>
+      </div>
+    );
+  }
+
+  const data = query.data;
+  if (data.items.length === 0) {
+    return <VideoListEmpty />;
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Filename</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Latest run</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.items.map((video) => {
+            const status = video.latest_run?.status;
+            return (
+              <TableRow key={video.id}>
+                <TableCell className="font-medium">
+                  {video.original_filename}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {formatRelativeTime(video.created_at)}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={status === "succeeded" ? "default" : "secondary"}
+                    className={
+                      status === "succeeded"
+                        ? "bg-copper/15 text-copper-deep border-transparent"
+                        : undefined
+                    }
+                  >
+                    {latestRunLabel(status)}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-muted-foreground text-sm">
+          Page {data.page} of {Math.max(data.pages, 1)} · {data.total}{" "}
+          {data.total === 1 ? "video" : "videos"}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={data.page <= 1}
+            onClick={() => {
+              goToPage(data.page - 1);
+            }}
+          >
+            Previous
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={data.page >= data.pages}
+            onClick={() => {
+              goToPage(data.page + 1);
+            }}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoListEmpty() {
+  return (
+    <div className="border-border/80 bg-muted/40 flex flex-col items-center gap-5 rounded-xl border border-dashed px-6 py-16 text-center">
+      <span className="bg-bay text-sand flex size-14 items-center justify-center rounded-xl shadow-sm">
+        <ClapperboardIcon className="size-7" aria-hidden />
+      </span>
+      <div className="flex max-w-sm flex-col gap-2">
+        <h2 className="font-heading text-foreground text-2xl font-semibold tracking-tight">
+          No videos yet
+        </h2>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          Drop in a screen recording and we&apos;ll give it a clear voice. Your
+          next polished demo starts here.
+        </p>
+      </div>
+      <Button type="button" disabled title="Coming soon" className="gap-2">
+        <UploadIcon />
+        Upload video
+      </Button>
+      <p className="text-muted-foreground text-xs">Upload is coming soon.</p>
+    </div>
+  );
+}
+
+function VideoListSkeleton() {
+  return (
+    <div className="flex flex-col gap-3" aria-busy="true">
+      <Skeleton className="h-8 w-full" />
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+  );
+}

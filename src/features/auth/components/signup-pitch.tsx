@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
+import { BrandMark } from "@/features/auth/components/brand-mark";
 import { GhostFibers } from "@/features/auth/components/ghost-fibers";
 
 const FIBER_COLORS = {
@@ -117,9 +118,7 @@ export function SignupPitch() {
         aria-hidden
       />
       <div className="relative z-10 flex max-w-xl flex-col gap-6">
-        <p className="text-sand text-xs font-medium tracking-[0.18em] uppercase">
-          Demo Narrator
-        </p>
+        <BrandMark tone="on-bay" />
         <h1 className="font-heading text-background text-4xl leading-tight tracking-tight sm:text-5xl">
           You speak, We narrate.
         </h1>

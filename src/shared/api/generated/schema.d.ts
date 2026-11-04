@@ -101,6 +101,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List my videos
+         * @description Return a page of the authenticated user's videos, newest first. Each item includes the latest succeeded narration run when one exists.
+         */
+        get: operations["list_videos_v1_videos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/videos/{video_id}/download": {
         parameters: {
             query?: never;
@@ -195,6 +215,19 @@ export interface components {
          * @enum {string}
          */
         NarrationStep: "transcribe" | "rewrite" | "voice" | "mux";
+        /** Page[TypeVar]Customized[VideoListItem] */
+        Page_TypeVar_Customized_VideoListItem_: {
+            /** Items */
+            items: components["schemas"]["VideoListItem"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Size */
+            size: number;
+            /** Pages */
+            pages: number;
+        };
         /** RetryRequest */
         RetryRequest: {
             /** Steps */
@@ -347,6 +380,67 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /**
+         * VideoListItem
+         * @example {
+         *       "created_at": "2026-01-15T12:00:00Z",
+         *       "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+         *       "latest_run": {
+         *         "created_at": "2026-01-15T12:00:00Z",
+         *         "finished_at": "2026-01-15T12:01:00Z",
+         *         "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+         *         "started_at": "2026-01-15T12:00:05Z",
+         *         "status": "succeeded"
+         *       },
+         *       "original_filename": "demo.mov",
+         *       "source_ext": "mov"
+         *     }
+         */
+        VideoListItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Original Filename */
+            original_filename: string;
+            /** Source Ext */
+            source_ext: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            latest_run?: components["schemas"]["VideoRunSummary"] | null;
+        };
+        /**
+         * VideoRunSummary
+         * @example {
+         *       "created_at": "2026-01-15T12:00:00Z",
+         *       "finished_at": "2026-01-15T12:01:00Z",
+         *       "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+         *       "started_at": "2026-01-15T12:00:05Z",
+         *       "status": "succeeded"
+         *     }
+         */
+        VideoRunSummary: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            status: components["schemas"]["RunStatus"];
+            current_step?: components["schemas"]["NarrationStep"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Started At */
+            started_at?: string | null;
+            /** Finished At */
+            finished_at?: string | null;
         };
     };
     responses: never;
@@ -729,6 +823,76 @@ export interface operations {
                     /**
                      * @example {
                      *       "detail": "Run not found"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_videos_v1_videos_get: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated videos */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+                     *           "original_filename": "demo.mov",
+                     *           "source_ext": "mov",
+                     *           "created_at": "2026-01-15T12:00:00Z",
+                     *           "latest_run": {
+                     *             "run_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                     *             "status": "succeeded",
+                     *             "created_at": "2026-01-15T12:00:00Z",
+                     *             "started_at": "2026-01-15T12:00:05Z",
+                     *             "finished_at": "2026-01-15T12:01:00Z"
+                     *           }
+                     *         }
+                     *       ],
+                     *       "total": 1,
+                     *       "page": 1,
+                     *       "size": 20,
+                     *       "pages": 1
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Page_TypeVar_Customized_VideoListItem_"];
+                };
+            };
+            /** @description Missing or invalid access token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "detail": "Not authenticated"
                      *     }
                      */
                     "application/json": components["schemas"]["ErrorResponse"];

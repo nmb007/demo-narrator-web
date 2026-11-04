@@ -2,7 +2,7 @@ import type { Route } from "next";
 
 import { safeRedirect } from "@/shared/lib/safe-redirect";
 
-export const SIGNED_IN_PATH = "/home" as const;
+export const SIGNED_IN_PATH = "/videos" as const;
 
 const AUTH_PAGES = new Set(["/login", "/signup"]);
 

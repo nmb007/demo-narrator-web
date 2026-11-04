@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { seedUser } from "./support/seed-user";
 
 test.describe("signup @fast", () => {
-  test("creates an account, shows the placeholder, and logs out", async ({
+  test("creates an account, opens the library, and logs out", async ({
     page,
   }) => {
     const email = `signup-${Date.now()}@example.com`;
@@ -14,10 +14,14 @@ test.describe("signup @fast", () => {
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill("password123");
     await page.getByRole("button", { name: "Create account" }).click();
+    await expect(page).toHaveURL(/\/videos$/);
+    await expect(
+      page.getByRole("heading", { name: "Your videos" }),
+    ).toBeVisible();
     await expect(page.getByText(email)).toBeVisible();
     await page.getByRole("button", { name: "Log out" }).click();
     await expect(page).toHaveURL(/\/login$/);
-    await page.goto("/home");
+    await page.goto("/videos");
     await expect(page).toHaveURL(/\/login\?next=/);
   });
 
