@@ -7,15 +7,15 @@ import {
 
 describe("latestRunLabel", () => {
   it("labels a missing run", () => {
-    expect(latestRunLabel(null)).toBe("No successful run");
-    expect(latestRunLabel(undefined)).toBe("No successful run");
+    expect(latestRunLabel(null)).toBe("Not ready");
+    expect(latestRunLabel(undefined)).toBe("Not ready");
   });
 
   it("labels known statuses", () => {
-    expect(latestRunLabel("succeeded")).toBe("Succeeded");
+    expect(latestRunLabel("succeeded")).toBe("Ready");
     expect(latestRunLabel("failed")).toBe("Failed");
-    expect(latestRunLabel("queued")).toBe("Queued");
-    expect(latestRunLabel("running")).toBe("Running");
+    expect(latestRunLabel("queued")).toBe("In progress");
+    expect(latestRunLabel("running")).toBe("In progress");
   });
 });
 

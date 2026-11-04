@@ -40,17 +40,16 @@ export function isAllowedVideoExtension(filename: string): boolean {
 
 export function latestRunLabel(status: RunStatus | null | undefined): string {
   if (!status) {
-    return "No successful run";
+    return "Not ready";
   }
   switch (status) {
     case "succeeded":
-      return "Succeeded";
+      return "Ready";
     case "failed":
       return "Failed";
     case "queued":
-      return "Queued";
     case "running":
-      return "Running";
+      return "In progress";
     default: {
       const _exhaustive: never = status;
       return _exhaustive;

@@ -120,10 +120,10 @@ function VideoListInner() {
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>Filename</TableHead>
+              <TableHead>Upload</TableHead>
               <TableHead className="w-40">Created</TableHead>
-              <TableHead className="w-36">Latest run</TableHead>
-              <TableHead className="w-52 text-right">Actions</TableHead>
+              <TableHead className="w-36">Narration</TableHead>
+              <TableHead className="w-56 text-right">Narrated video</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -134,7 +134,7 @@ function VideoListInner() {
                 onPlay={() => {
                   setPreview({
                     videoId: video.id,
-                    title: video.original_filename,
+                    title: `Narrated · ${video.original_filename}`,
                   });
                 }}
               />
@@ -221,19 +221,15 @@ function VideoListRow({
         </Badge>
       </TableCell>
       <TableCell>
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={!canUseOutput}
-            onClick={onPlay}
-          >
-            <PlayIcon aria-hidden />
-            Play
-          </Button>
-          <DownloadButton videoId={video.id} disabled={!canUseOutput} />
-        </div>
+        {canUseOutput ? (
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={onPlay}>
+              <PlayIcon aria-hidden />
+              Play
+            </Button>
+            <DownloadButton videoId={video.id} />
+          </div>
+        ) : null}
       </TableCell>
     </TableRow>
   );
