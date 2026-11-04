@@ -123,7 +123,7 @@ function VideoListInner() {
               <TableHead>Upload</TableHead>
               <TableHead className="w-40">Created</TableHead>
               <TableHead className="w-36">Narration</TableHead>
-              <TableHead className="w-56 text-right">Narrated video</TableHead>
+              <TableHead className="w-56">Narrated video</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -222,7 +222,7 @@ function VideoListRow({
       </TableCell>
       <TableCell>
         {canUseOutput ? (
-          <div className="flex justify-end gap-2">
+          <div className="flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={onPlay}>
               <PlayIcon aria-hidden />
               Play
