@@ -1,15 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { AuthStatusScreen } from "@/features/auth/components/auth-status-screen";
 import { loginRedirect } from "@/features/auth/login-path";
 import { getSnapshot, peekSessionEnd } from "@/shared/session/session-store";
 import { useHydrated, useSession } from "@/shared/session/use-session";
-
-/** Temporary: keep the loading screen visible so the gate UI can be reviewed. */
-const LOADING_TEST_DELAY_MS = 10_000;
 
 export function RequireSession({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -17,7 +14,6 @@ export function RequireSession({ children }: { children: ReactNode }) {
   const session = useSession();
   const hadSession = useRef(false);
   const redirected = useRef(false);
-  const [loadingHoldDone, setLoadingHoldDone] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -26,22 +22,7 @@ export function RequireSession({ children }: { children: ReactNode }) {
   }, [session]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setLoadingHoldDone(true);
-    }, LOADING_TEST_DELAY_MS);
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (
-      !loadingHoldDone ||
-      !hydrated ||
-      session ||
-      hadSession.current ||
-      redirected.current
-    ) {
+    if (!hydrated || session || hadSession.current || redirected.current) {
       return;
     }
     getSnapshot();
@@ -56,9 +37,9 @@ export function RequireSession({ children }: { children: ReactNode }) {
     }
     redirected.current = true;
     router.replace(href);
-  }, [hydrated, loadingHoldDone, router, session]);
+  }, [hydrated, router, session]);
 
-  if (!loadingHoldDone || !hydrated || !session) {
+  if (!hydrated || !session) {
     return <AuthStatusScreen message="Loading your account…" />;
   }
 
