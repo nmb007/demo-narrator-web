@@ -10,6 +10,7 @@ import { videosQuery } from "@/features/narration/api";
 import { latestRunLabel } from "@/features/narration/domain";
 import { videosListMessage } from "@/features/narration/errors";
 import { ApiError } from "@/shared/api/errors";
+import { cn } from "@/shared/lib/cn";
 import { formatRelativeTime } from "@/shared/lib/format";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -96,44 +97,54 @@ function VideoListInner() {
     return <VideoListEmpty />;
   }
 
+  const fetching = query.isFetching;
+
   return (
     <div className="flex flex-col gap-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Filename</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Latest run</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.items.map((video) => {
-            const status = video.latest_run?.status;
-            return (
-              <TableRow key={video.id}>
-                <TableCell className="font-medium">
-                  {video.original_filename}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatRelativeTime(video.created_at)}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={status === "succeeded" ? "default" : "secondary"}
-                    className={
-                      status === "succeeded"
-                        ? "bg-copper/15 text-copper-deep border-transparent"
-                        : undefined
-                    }
-                  >
-                    {latestRunLabel(status)}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <div
+        className={cn(
+          "transition-opacity",
+          fetching ? "pointer-events-none opacity-50" : "opacity-100",
+        )}
+        aria-busy={fetching ? true : undefined}
+      >
+        <Table className="table-fixed">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Filename</TableHead>
+              <TableHead className="w-40">Created</TableHead>
+              <TableHead className="w-36">Latest run</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.items.map((video) => {
+              const status = video.latest_run?.status;
+              return (
+                <TableRow key={video.id}>
+                  <TableCell className="max-w-0 truncate font-medium">
+                    {video.original_filename}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatRelativeTime(video.created_at)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={status === "succeeded" ? "default" : "secondary"}
+                      className={
+                        status === "succeeded"
+                          ? "bg-copper/15 text-copper-deep border-transparent"
+                          : undefined
+                      }
+                    >
+                      {latestRunLabel(status)}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
 
       <div className="flex items-center justify-between gap-3">
         <p className="text-muted-foreground text-sm">
@@ -145,7 +156,7 @@ function VideoListInner() {
             type="button"
             variant="outline"
             size="sm"
-            disabled={data.page <= 1}
+            disabled={fetching || data.page <= 1}
             onClick={() => {
               goToPage(data.page - 1);
             }}
@@ -156,7 +167,7 @@ function VideoListInner() {
             type="button"
             variant="outline"
             size="sm"
-            disabled={data.page >= data.pages}
+            disabled={fetching || data.page >= data.pages}
             onClick={() => {
               goToPage(data.page + 1);
             }}

@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   queryOptions,
   useMutation,
   useQueryClient,
@@ -23,6 +24,7 @@ export function videosQuery(page: number) {
   return queryOptions({
     queryKey: ["narration", "videos", page] as const,
     queryFn: () => fetchVideosPage(page),
+    placeholderData: keepPreviousData,
   });
 }
 
