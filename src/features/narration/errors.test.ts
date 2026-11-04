@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DOWNLOAD_FAILED_MESSAGE,
+  DOWNLOAD_NOT_READY_MESSAGE,
+  NETWORK_MESSAGE,
+  PLAY_FAILED_MESSAGE,
   UPLOAD_INTERRUPTED_MESSAGE,
   UPLOAD_TOO_LARGE_MESSAGE,
   UPLOAD_UNSUPPORTED_TYPE_MESSAGE,
+  downloadMessage,
+  playMessage,
   uploadFieldErrors,
   uploadFormMessage,
 } from "@/features/narration/errors";
@@ -78,5 +84,34 @@ describe("uploadFieldErrors", () => {
         new ApiError(415, "bad type", { video: "nope" }, "req-1"),
       ),
     ).toEqual({});
+  });
+});
+
+describe("downloadMessage", () => {
+  it("maps 404 and network failures", () => {
+    expect(
+      downloadMessage(
+        new ApiError(404, "No narrated output is ready yet", {}, "r"),
+      ),
+    ).toBe(DOWNLOAD_NOT_READY_MESSAGE);
+    expect(downloadMessage(new ApiError(0, "network", {}, "r"))).toBe(
+      NETWORK_MESSAGE,
+    );
+    expect(downloadMessage(new ApiError(500, "boom", {}, "r"))).toBe(
+      DOWNLOAD_FAILED_MESSAGE,
+    );
+  });
+});
+
+describe("playMessage", () => {
+  it("maps 404 and server failures", () => {
+    expect(
+      playMessage(
+        new ApiError(404, "No narrated output is ready yet", {}, "r"),
+      ),
+    ).toBe(DOWNLOAD_NOT_READY_MESSAGE);
+    expect(playMessage(new ApiError(500, "boom", {}, "r"))).toBe(
+      PLAY_FAILED_MESSAGE,
+    );
   });
 });

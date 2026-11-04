@@ -1,15 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ClapperboardIcon, UploadIcon } from "lucide-react";
+import { ClapperboardIcon, PlayIcon, UploadIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 import { videosQuery } from "@/features/narration/api";
+import { DownloadButton } from "@/features/narration/components/download-button";
+import { VideoPreview } from "@/features/narration/components/video-preview";
 import { latestRunLabel } from "@/features/narration/domain";
 import { videosListMessage } from "@/features/narration/errors";
 import { ApiError } from "@/shared/api/errors";
+import type { VideoListItem } from "@/shared/api/types";
 import { cn } from "@/shared/lib/cn";
 import { formatRelativeTime } from "@/shared/lib/format";
 import { Badge } from "@/shared/ui/badge";
@@ -43,11 +46,17 @@ export function VideoList() {
   );
 }
 
+type PreviewTarget = {
+  videoId: string;
+  title: string;
+};
+
 function VideoListInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const page = parsePage(searchParams.get("page"));
   const query = useQuery(videosQuery(page));
+  const [preview, setPreview] = useState<PreviewTarget | null>(null);
 
   function goToPage(nextPage: number) {
     const params = new URLSearchParams(searchParams.toString());
@@ -114,34 +123,22 @@ function VideoListInner() {
               <TableHead>Filename</TableHead>
               <TableHead className="w-40">Created</TableHead>
               <TableHead className="w-36">Latest run</TableHead>
+              <TableHead className="w-52 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.items.map((video) => {
-              const status = video.latest_run?.status;
-              return (
-                <TableRow key={video.id}>
-                  <TableCell className="max-w-0 truncate font-medium">
-                    {video.original_filename}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatRelativeTime(video.created_at)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={status === "succeeded" ? "default" : "secondary"}
-                      className={
-                        status === "succeeded"
-                          ? "bg-copper/15 text-copper-deep border-transparent"
-                          : undefined
-                      }
-                    >
-                      {latestRunLabel(status)}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {data.items.map((video) => (
+              <VideoListRow
+                key={video.id}
+                video={video}
+                onPlay={() => {
+                  setPreview({
+                    videoId: video.id,
+                    title: video.original_filename,
+                  });
+                }}
+              />
+            ))}
           </TableBody>
         </Table>
       </div>
@@ -176,7 +173,69 @@ function VideoListInner() {
           </Button>
         </div>
       </div>
+
+      {preview ? (
+        <VideoPreview
+          videoId={preview.videoId}
+          title={preview.title}
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setPreview(null);
+            }
+          }}
+        />
+      ) : null}
     </div>
+  );
+}
+
+function VideoListRow({
+  video,
+  onPlay,
+}: {
+  video: VideoListItem;
+  onPlay: () => void;
+}) {
+  const status = video.latest_run?.status;
+  const canUseOutput = status === "succeeded";
+
+  return (
+    <TableRow>
+      <TableCell className="max-w-0 truncate font-medium">
+        {video.original_filename}
+      </TableCell>
+      <TableCell className="text-muted-foreground">
+        {formatRelativeTime(video.created_at)}
+      </TableCell>
+      <TableCell>
+        <Badge
+          variant={canUseOutput ? "default" : "secondary"}
+          className={
+            canUseOutput
+              ? "bg-copper/15 text-copper-deep border-transparent"
+              : undefined
+          }
+        >
+          {latestRunLabel(status)}
+        </Badge>
+      </TableCell>
+      <TableCell>
+        <div className="flex justify-end gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={!canUseOutput}
+            onClick={onPlay}
+          >
+            <PlayIcon aria-hidden />
+            Play
+          </Button>
+          <DownloadButton videoId={video.id} disabled={!canUseOutput} />
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }
 

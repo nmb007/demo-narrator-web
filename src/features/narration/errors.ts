@@ -14,8 +14,40 @@ export const UPLOAD_UNSUPPORTED_TYPE_MESSAGE =
   "Only .mov and .mp4 files are supported.";
 export const UPLOAD_SUCCESS_MESSAGE =
   "Upload complete. We're preparing the narration now.";
+export const DOWNLOAD_FAILED_MESSAGE =
+  "We couldn't download that video. Try again.";
+export const DOWNLOAD_NOT_READY_MESSAGE =
+  "The narrated video isn't ready yet. Try again when the run has finished.";
+export const PLAY_FAILED_MESSAGE =
+  "We couldn't load that video for playback. Try again.";
 
 export type UploadField = "video" | "voice" | "max_atempo";
+
+export function downloadMessage(error: ApiError): string {
+  if (error.status === 404) {
+    return DOWNLOAD_NOT_READY_MESSAGE;
+  }
+  if (error.status === 0) {
+    return NETWORK_MESSAGE;
+  }
+  if (error.status >= 500) {
+    return DOWNLOAD_FAILED_MESSAGE;
+  }
+  return error.message || DOWNLOAD_FAILED_MESSAGE;
+}
+
+export function playMessage(error: ApiError): string {
+  if (error.status === 404) {
+    return DOWNLOAD_NOT_READY_MESSAGE;
+  }
+  if (error.status === 0) {
+    return NETWORK_MESSAGE;
+  }
+  if (error.status >= 500) {
+    return PLAY_FAILED_MESSAGE;
+  }
+  return error.message || PLAY_FAILED_MESSAGE;
+}
 
 export function videosListMessage(error: ApiError): string {
   if (error.status === 0) {
