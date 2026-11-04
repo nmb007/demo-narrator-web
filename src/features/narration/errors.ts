@@ -13,7 +13,7 @@ export const UPLOAD_TOO_LARGE_MESSAGE =
 export const UPLOAD_UNSUPPORTED_TYPE_MESSAGE =
   "Only .mov and .mp4 files are supported.";
 export const UPLOAD_SUCCESS_MESSAGE =
-  "Video uploaded. Narration is queued in your library.";
+  "Upload complete. We're preparing the narration now.";
 
 export type UploadField = "video" | "voice" | "max_atempo";
 
